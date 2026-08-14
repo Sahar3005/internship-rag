@@ -1,0 +1,103 @@
+{
+    "candidate": "Candidate",
+    "results": [
+        {
+            "rank": 1,
+            "title": "AI/ML Intern",
+            "company": "TechAI Solutions",
+            "similarity_score": 61.13,
+            "matched_required_skills": [
+                "machine learning",
+                "numpy",
+                "pandas",
+                "python"
+            ],
+            "matched_preferred_skills": [],
+            "missing_required_skills": [
+                "scikit-learn"
+            ],
+            "location": "Bangalore",
+            "work_mode": "Hybrid",
+            "duration": "6 months"
+        },
+        {
+            "rank": 2,
+            "title": "Generative AI Intern",
+            "company": "GenAI Labs",
+            "similarity_score": 58.91,
+            "matched_required_skills": [
+                "generative ai",
+                "python"
+            ],
+            "matched_preferred_skills": [
+                "langchain"
+            ],
+            "missing_required_skills": [
+                "llm",
+                "rag"
+            ],
+            "location": "Bangalore",
+            "work_mode": "Remote",
+            "duration": "6 months"
+        },
+        {
+            "rank": 3,
+            "title": "Computer Vision Intern",
+            "company": "VisionTech",
+            "similarity_score": 57.3,
+            "matched_required_skills": [
+                "machine learning",
+                "opencv",
+                "python"
+            ],
+            "matched_preferred_skills": [],
+            "missing_required_skills": [
+                "computer vision"
+            ],
+            "location": "Delhi",
+            "work_mode": "On-site",
+            "duration": "4 months"
+        },
+        {
+            "rank": 4,
+            "title": "Data Science Intern",
+            "company": "DataWorks",
+            "similarity_score": 49.8,
+            "matched_required_skills": [
+                "machine learning",
+                "numpy",
+                "pandas",
+                "python",
+                "sql"
+            ],
+            "matched_preferred_skills": [
+                "power bi"
+            ],
+            "missing_required_skills": [],
+            "location": "Gurgaon",
+            "work_mode": "Hybrid",
+            "duration": "6 months"
+        },
+        {
+            "rank": 5,
+            "title": "Python Backend Developer Intern",
+            "company": "WebTech Pvt Ltd",
+            "similarity_score": 43.6,
+            "matched_required_skills": [
+                "django",
+                "python",
+                "sql"
+            ],
+            "matched_preferred_skills": [
+                "fastapi",
+                "git"
+            ],
+            "missing_required_skills": [
+                "rest api"
+            ],
+            "location": "Noida",
+            "work_mode": "On-site",
+            "duration": "3 months"
+        }
+    ]
+}

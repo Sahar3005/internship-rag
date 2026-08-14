@@ -1,0 +1,45 @@
+{
+    "name": "Candidate",
+    "education": {
+        "degree": "B.Tech",
+        "branch": "Computer Science and Engineering",
+        "specialization": "Artificial Intelligence and Machine Learning",
+        "graduation_year": 2026
+    },
+    "skills": [
+        "Python",
+        "SQL",
+        "Machine Learning",
+        "Artificial Intelligence",
+        "Generative AI",
+        "Django",
+        "FastAPI",
+        "LangChain",
+        "Pandas",
+        "NumPy",
+        "Power BI",
+        "Git",
+        "GitHub",
+        "OpenCV"
+    ],
+    "experience": [
+        {
+            "role": "AI/ML Intern",
+            "description": "Worked on AI and machine learning based applications."
+        }
+    ],
+    "projects": [
+        {
+            "name": "Breast Cancer Detection",
+            "description": "Machine learning project for breast cancer classification using machine learning algorithms."
+        },
+        {
+            "name": "Smart Attendance System",
+            "description": "Face recognition based attendance system using Python and OpenCV."
+        },
+        {
+            "name": "AI Article Generator",
+            "description": "AI-based article generation automation using n8n and generative AI."
+        }
+    ]
+}

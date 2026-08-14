@@ -1,0 +1,169 @@
+{
+    "candidate": {
+        "name": "SAHAR ANSARI",
+        "education": "B.Tech in Computer Science & Engineering (AI & ML) 74% Nitra Technical Campus, Ghaziabad 2023 – 2026 Diploma in Information T echnology 73.27% Government Polytechnic, Ghaziabad 2020 – 2023",
+        "skills": [
+            "HTML 5",
+            "CSS 3",
+            "JavaScript",
+            "React.js",
+            "Python",
+            "MySQL",
+            "Scikit-learn",
+            "SVM",
+            "KNN",
+            "Random Forest",
+            "Model Training & Evaluation",
+            "Classification",
+            "OpenCV",
+            "Image Preprocessing",
+            "Feature Extraction",
+            "NumPy",
+            "Pandas",
+            "Matplotlib",
+            "Seaborn",
+            "Exploratory Data Analysis (EDA)",
+            "Flask",
+            "REST API Development",
+            "Model Serving",
+            "Generative AI Basics",
+            "Evaluation Metrics (Precision",
+            "Recall",
+            "F1-Score)",
+            "API Integration",
+            "Jupyter Notebook",
+            "Django",
+            "Google Colab",
+            "VS Code",
+            "Git",
+            "GitHub",
+            "Tableau",
+            "MS Office"
+        ],
+        "experience": "Python Developer InternInnobyte Services — Sep 2025 – Oct 2025 •Built a command-line personal finance management application using Python with object-oriented design princi- ples. •Implemented CSV and JSON file handling for persistent data storage and automated reporting of spending pat- terns. •Designed modular, reusable code structures and improved debugging skills through iterative real-world testing.",
+        "projects": [
+            "Smart Attendance System using Face RecognitionPython, OpenCV, ML — 2026",
+            "AI-Based Crop Disease Detection SystemPython, Scikit-learn, Image Processing — 2025"
+        ]
+    },
+    "recommendations": [
+        {
+            "rank": 1,
+            "internship_id": 3,
+            "title": "Data Science Intern",
+            "company": "DataWorks",
+            "description": "Analyze datasets, build predictive models and create data visualizations.",
+            "required_skills": [
+                "Python",
+                "Pandas",
+                "NumPy",
+                "Machine Learning",
+                "SQL"
+            ],
+            "preferred_skills": [
+                "Power BI",
+                "Scikit-learn"
+            ],
+            "education": "B.Tech in Computer Science, Data Science or related field",
+            "experience": "Freshers welcome",
+            "location": "Gurgaon",
+            "work_mode": "Hybrid",
+            "duration": "6 months",
+            "similarity_score": 65.56
+        },
+        {
+            "rank": 2,
+            "internship_id": 2,
+            "title": "Python Backend Developer Intern",
+            "company": "WebTech Pvt Ltd",
+            "description": "Develop backend APIs and web applications using Python and Django.",
+            "required_skills": [
+                "Python",
+                "Django",
+                "REST API",
+                "SQL"
+            ],
+            "preferred_skills": [
+                "FastAPI",
+                "Git"
+            ],
+            "education": "B.Tech or BCA in Computer Science",
+            "experience": "0-1 years",
+            "location": "Noida",
+            "work_mode": "On-site",
+            "duration": "3 months",
+            "similarity_score": 65.31
+        },
+        {
+            "rank": 3,
+            "internship_id": 1,
+            "title": "AI/ML Intern",
+            "company": "TechAI Solutions",
+            "description": "Work on machine learning models, data preprocessing and AI applications.",
+            "required_skills": [
+                "Python",
+                "Machine Learning",
+                "Scikit-learn",
+                "Pandas",
+                "NumPy"
+            ],
+            "preferred_skills": [
+                "TensorFlow",
+                "Deep Learning"
+            ],
+            "education": "B.Tech in Computer Science, AI, ML or related field",
+            "experience": "Freshers or candidates with internship experience",
+            "location": "Bangalore",
+            "work_mode": "Hybrid",
+            "duration": "6 months",
+            "similarity_score": 58.37
+        },
+        {
+            "rank": 4,
+            "internship_id": 4,
+            "title": "Generative AI Intern",
+            "company": "GenAI Labs",
+            "description": "Build applications using LLMs, embeddings, RAG pipelines and vector databases.",
+            "required_skills": [
+                "Python",
+                "Generative AI",
+                "LLM",
+                "RAG"
+            ],
+            "preferred_skills": [
+                "LangChain",
+                "FAISS",
+                "Pinecone"
+            ],
+            "education": "Computer Science or AI/ML degree",
+            "experience": "0-1 years",
+            "location": "Bangalore",
+            "work_mode": "Remote",
+            "duration": "6 months",
+            "similarity_score": 56.13
+        },
+        {
+            "rank": 5,
+            "internship_id": 5,
+            "title": "Computer Vision Intern",
+            "company": "VisionTech",
+            "description": "Develop computer vision and image processing applications.",
+            "required_skills": [
+                "Python",
+                "OpenCV",
+                "Computer Vision",
+                "Machine Learning"
+            ],
+            "preferred_skills": [
+                "Deep Learning",
+                "TensorFlow"
+            ],
+            "education": "B.Tech in Computer Science or AI/ML",
+            "experience": "Freshers",
+            "location": "Delhi",
+            "work_mode": "On-site",
+            "duration": "4 months",
+            "similarity_score": 50.29
+        }
+    ]
+}

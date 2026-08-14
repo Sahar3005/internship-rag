@@ -1,0 +1,136 @@
+[
+    {
+        "id": 1,
+        "name": "AI ML Candidate",
+        "education": "B.Tech Computer Science AI ML",
+        "skills": [
+            "Python",
+            "Machine Learning",
+            "Scikit-learn",
+            "Pandas",
+            "NumPy"
+        ],
+        "experience": "Worked on machine learning projects.",
+        "projects": [
+            "Breast Cancer Detection using Machine Learning"
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Backend Developer",
+        "education": "B.Tech Computer Science",
+        "skills": [
+            "Python",
+            "Django",
+            "REST API",
+            "SQL",
+            "Git"
+        ],
+        "experience": "Developed backend APIs using Django.",
+        "projects": [
+            "User Management REST API"
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Data Science Candidate",
+        "education": "B.Tech Data Science",
+        "skills": [
+            "Python",
+            "Pandas",
+            "NumPy",
+            "SQL",
+            "Machine Learning",
+            "Power BI"
+        ],
+        "experience": "Worked on data analysis and machine learning projects.",
+        "projects": [
+            "Sales Data Analysis Dashboard"
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Generative AI Candidate",
+        "education": "B.Tech Computer Science AI ML",
+        "skills": [
+            "Python",
+            "Generative AI",
+            "LLM",
+            "RAG",
+            "LangChain",
+            "FAISS"
+        ],
+        "experience": "Built applications using LLMs and RAG.",
+        "projects": [
+            "RAG based Internship Recommendation System",
+            "AI Article Generator"
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Computer Vision Candidate",
+        "education": "B.Tech AI ML",
+        "skills": [
+            "Python",
+            "OpenCV",
+            "Computer Vision",
+            "Machine Learning"
+        ],
+        "experience": "Worked on image processing and face recognition.",
+        "projects": [
+            "Face Recognition Attendance System"
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Data Analyst Candidate",
+        "education": "B.Tech Computer Science",
+        "skills": [
+            "SQL",
+            "Python",
+            "Pandas",
+            "Excel",
+            "Power BI"
+        ],
+        "experience": "Analyzed business datasets and created dashboards.",
+        "projects": [
+            "Sales Analytics Dashboard"
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Multi Skill AI Candidate",
+        "education": "B.Tech Computer Science AI ML",
+        "skills": [
+            "Python",
+            "Machine Learning",
+            "Django",
+            "SQL",
+            "Generative AI",
+            "LLM",
+            "RAG",
+            "OpenCV",
+            "Pandas"
+        ],
+        "experience": "Built multiple AI and backend applications.",
+        "projects": [
+            "ML Classification System",
+            "Django REST API",
+            "RAG Application"
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Python Fresher",
+        "education": "B.Tech Computer Science",
+        "skills": [
+            "Python",
+            "SQL",
+            "Git"
+        ],
+        "experience": "Fresher",
+        "projects": [
+            "Python CLI Application"
+        ]
+    }
+]
