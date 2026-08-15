@@ -41,7 +41,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/recommend-resume",
+        "https://internship-rag-2.onrender.com/recommend-resume",
         {
           method: "POST",
           body: formData,
