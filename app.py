@@ -2,6 +2,7 @@ import json
 from fastapi import UploadFile, File, HTTPException
 from pypdf import PdfReader
 import io
+import torch
 import faiss
 import numpy as np
 from fastapi import FastAPI
@@ -32,8 +33,13 @@ app.add_middleware(
 # --------------------------------------------------
 
 model = SentenceTransformer(
-    "sentence-transformers/all-MiniLM-L6-v2"
+    "sentence-transformers/all-MiniLM-L6-v2",
+    device="cpu"
 )
+
+model.eval()
+
+torch.set_num_threads(1)
 
 
 # --------------------------------------------------
@@ -142,22 +148,11 @@ def recommend(candidate: CandidateRequest):
     # Create embedding
 
     embedding = model.encode(
-        [candidate_text],
-        convert_to_numpy=True
-    )
-
-
-    # Normalize
-
-    embedding = (
-        embedding
-        / np.linalg.norm(
-            embedding,
-            axis=1,
-            keepdims=True
-        )
-    )
-
+    [candidate_text],
+    convert_to_numpy=True,
+    normalize_embeddings=True,
+    show_progress_bar=False
+)
 
     # Search
 
@@ -272,19 +267,11 @@ async def recommend_resume(
     # --------------------------------------------------
 
     candidate_embedding = model.encode(
-        [resume_text],
-        convert_to_numpy=True
-    )
-
-
-    candidate_embedding = (
-        candidate_embedding
-        / np.linalg.norm(
-            candidate_embedding,
-            axis=1,
-            keepdims=True
-        )
-    )
+    [resume_text],
+    convert_to_numpy=True,
+    normalize_embeddings=True,
+    show_progress_bar=False
+)
 
 
     # --------------------------------------------------
