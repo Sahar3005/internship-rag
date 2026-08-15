@@ -1,7 +1,7 @@
 fastapi
-uvicorn[standard]
-python-multipart
+uvicorn
 pypdf
 faiss-cpu
 numpy
-sentence-transformers
+scikit-learn
+python-multipart

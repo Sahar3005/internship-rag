@@ -1,163 +1,80 @@
 import json
 import io
+import os
 
-import torch
-import faiss
 import numpy as np
+import faiss
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pypdf import PdfReader
-from sentence_transformers import SentenceTransformer
+
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-# ============================================================
-# FastAPI App
-# ============================================================
+# =========================================================
+# FASTAPI
+# =========================================================
 
 app = FastAPI(
     title="Internship RAG Recommendation API",
-    description="Semantic internship recommendation using FAISS",
-    version="1.0"
+    description="Internship recommendation using TF-IDF + FAISS",
+    version="2.0"
 )
 
 
-# ============================================================
+# =========================================================
 # CORS
-# ============================================================
+# =========================================================
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-
-        # Add your Netlify URL here after deployment
-        # "https://your-netlify-site.netlify.app",
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# ============================================================
-# CPU Optimization
-# ============================================================
+# =========================================================
+# FILE PATHS
+# =========================================================
 
-torch.set_num_threads(1)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-
-# ============================================================
-# Health Check
-# ============================================================
-
-@app.get("/")
-def root():
-    return {
-        "status": "online",
-        "message": "Internship RAG API is running",
-        "version": "1.0"
-    }
-
-
-@app.get("/health")
-def health():
-    return {
-        "status": "healthy"
-    }
-
-
-# ============================================================
-# Lazy Load Sentence Transformer
-# ============================================================
-
-model = None
-
-
-def get_model():
-
-    global model
-
-    if model is None:
-
-        print("Loading SentenceTransformer model...")
-
-        model = SentenceTransformer(
-            "sentence-transformers/all-MiniLM-L6-v2",
-            device="cpu"
-        )
-
-        model.eval()
-
-        print("SentenceTransformer model loaded.")
-
-    return model
-
-
-# ============================================================
-# Load FAISS Index
-# ============================================================
-
-print("Loading FAISS index...")
-
-index = faiss.read_index(
-    "vector_db/internships.index"
+DATA_DIR = os.path.join(
+    BASE_DIR,
+    "data"
 )
 
-print(
-    f"FAISS index loaded. Total vectors: {index.ntotal}"
+VECTOR_DIR = os.path.join(
+    BASE_DIR,
+    "vector_db"
+)
+
+METADATA_FILE = os.path.join(
+    VECTOR_DIR,
+    "internships_metadata.json"
+)
+
+INDEX_FILE = os.path.join(
+    VECTOR_DIR,
+    "internships.index"
+)
+
+VECTORIZER_FILE = os.path.join(
+    VECTOR_DIR,
+    "tfidf_vectorizer.pkl"
 )
 
 
-# ============================================================
-# Get Internship Embeddings
-# ============================================================
-
-internship_embeddings = index.reconstruct_n(
-    0,
-    index.ntotal
-)
-
-
-# ============================================================
-# Normalize Internship Embeddings
-# ============================================================
-
-internship_embeddings = (
-    internship_embeddings
-    / np.linalg.norm(
-        internship_embeddings,
-        axis=1,
-        keepdims=True
-    )
-)
-
-
-# ============================================================
-# Create Cosine Similarity Index
-# ============================================================
-
-dimension = internship_embeddings.shape[1]
-
-cosine_index = faiss.IndexFlatIP(
-    dimension
-)
-
-cosine_index.add(
-    internship_embeddings.astype("float32")
-)
-
-print("Cosine similarity index ready.")
-
-
-# ============================================================
-# Load Internship Metadata
-# ============================================================
+# =========================================================
+# LOAD INTERNSHIP METADATA
+# =========================================================
 
 with open(
-    "vector_db/internships_metadata.json",
+    METADATA_FILE,
     "r",
     encoding="utf-8"
 ) as file:
@@ -170,9 +87,63 @@ print(
 )
 
 
-# ============================================================
-# Candidate Request Model
-# ============================================================
+# =========================================================
+# LOAD FAISS INDEX
+# =========================================================
+
+if not os.path.exists(INDEX_FILE):
+
+    raise RuntimeError(
+        "FAISS index not found. "
+        "Run create_embeddings.py first."
+    )
+
+
+index = faiss.read_index(
+    INDEX_FILE
+)
+
+
+# =========================================================
+# LOAD TF-IDF VECTORIZER
+# =========================================================
+
+import pickle
+
+
+if not os.path.exists(VECTORIZER_FILE):
+
+    raise RuntimeError(
+        "TF-IDF vectorizer not found. "
+        "Run create_embeddings.py first."
+    )
+
+
+with open(
+    VECTORIZER_FILE,
+    "rb"
+) as file:
+
+    vectorizer = pickle.load(file)
+
+
+# =========================================================
+# HEALTH CHECK
+# =========================================================
+
+@app.get("/")
+def home():
+
+    return {
+        "status": "online",
+        "message": "Internship RAG API is running",
+        "version": "2.0"
+    }
+
+
+# =========================================================
+# REQUEST MODEL
+# =========================================================
 
 class CandidateRequest(BaseModel):
 
@@ -187,72 +158,53 @@ class CandidateRequest(BaseModel):
     projects: list[str]
 
 
-# ============================================================
-# Convert Candidate Data to Text
-# ============================================================
+# =========================================================
+# CANDIDATE → TEXT
+# =========================================================
 
 def candidate_to_text(candidate):
 
     return f"""
-Candidate Education:
-{candidate.education}
+    Education:
+    {candidate.education}
 
-Candidate Skills:
-{', '.join(candidate.skills)}
+    Skills:
+    {' '.join(candidate.skills)}
 
-Candidate Experience:
-{candidate.experience}
+    Experience:
+    {candidate.experience}
 
-Candidate Projects:
-{', '.join(candidate.projects)}
-"""
+    Projects:
+    {' '.join(candidate.projects)}
+    """
 
 
-# ============================================================
-# Generate Embedding
-# ============================================================
+# =========================================================
+# SEARCH INTERNSHIPS
+# =========================================================
 
-def create_embedding(text):
+def search_internships(text, top_k=5):
 
-    embedding = get_model().encode(
-        [text],
-        convert_to_numpy=True,
-        normalize_embeddings=True,
-        show_progress_bar=False
+    query_vector = vectorizer.transform(
+        [text]
     )
 
-    return embedding
-
-
-# ============================================================
-# Search Internships
-# ============================================================
-
-def search_internships(embedding):
-
-    top_k = min(
-        5,
-        len(internships)
+    query_array = query_vector.toarray().astype(
+        "float32"
     )
 
-    similarities, indices = cosine_index.search(
-        embedding.astype("float32"),
-        top_k
+    similarities, indices = index.search(
+        query_array,
+        min(top_k, len(internships))
     )
-
-    return similarities[0], indices[0]
-
-
-# ============================================================
-# Prepare Internship Results
-# ============================================================
-
-def build_results(similarities, indices):
 
     results = []
 
     for rank, (similarity, index_id) in enumerate(
-        zip(similarities, indices),
+        zip(
+            similarities[0],
+            indices[0]
+        ),
         start=1
     ):
 
@@ -266,129 +218,99 @@ def build_results(similarities, indices):
             )
         )
 
-        results.append(
-            {
-                "rank": rank,
+        results.append({
 
-                "internship_id": internship.get(
-                    "id"
-                ),
+            "rank": rank,
 
-                "title": internship.get(
-                    "title",
-                    ""
-                ),
+            "internship_id":
+                internship.get("id"),
 
-                "company": internship.get(
-                    "company",
-                    ""
-                ),
+            "title":
+                internship.get("title"),
 
-                "description": internship.get(
-                    "description",
-                    ""
-                ),
+            "company":
+                internship.get("company"),
 
-                "required_skills": internship.get(
+            "description":
+                internship.get("description"),
+
+            "required_skills":
+                internship.get(
                     "required_skills",
                     []
                 ),
 
-                "preferred_skills": internship.get(
+            "preferred_skills":
+                internship.get(
                     "preferred_skills",
                     []
                 ),
 
-                "education": internship.get(
-                    "education",
-                    ""
-                ),
+            "education":
+                internship.get("education"),
 
-                "experience": internship.get(
-                    "experience",
-                    ""
-                ),
+            "experience":
+                internship.get("experience"),
 
-                "location": internship.get(
-                    "location",
-                    ""
-                ),
+            "location":
+                internship.get("location"),
 
-                "work_mode": internship.get(
-                    "work_mode",
-                    ""
-                ),
+            "work_mode":
+                internship.get("work_mode"),
 
-                "duration": internship.get(
-                    "duration",
-                    ""
-                ),
+            "duration":
+                internship.get("duration"),
 
-                "similarity_score": round(
-                    score,
-                    2
-                )
-            }
-        )
+            "similarity_score":
+                round(score, 2)
+
+        })
 
     return results
 
 
-# ============================================================
-# Candidate Recommendation API
-# ============================================================
+# =========================================================
+# JSON RECOMMENDATION API
+# =========================================================
 
 @app.post("/recommend")
-def recommend(candidate: CandidateRequest):
-
-    # Convert candidate to text
+def recommend(
+    candidate: CandidateRequest
+):
 
     candidate_text = candidate_to_text(
         candidate
     )
 
-    # Create embedding
-
-    embedding = create_embedding(
+    results = search_internships(
         candidate_text
     )
 
-    # Search FAISS
-
-    similarities, indices = search_internships(
-        embedding
-    )
-
-    # Prepare results
-
-    results = build_results(
-        similarities,
-        indices
-    )
-
     return {
-        "candidate": candidate.name,
 
-        "total_matches": len(
+        "candidate":
+            candidate.name,
+
+        "total_matches":
+            len(results),
+
+        "matches":
             results
-        ),
-
-        "matches": results
     }
 
 
-# ============================================================
-# Resume Upload + Recommendation API
-# ============================================================
+# =========================================================
+# RESUME RECOMMENDATION API
+# =========================================================
 
 @app.post("/recommend-resume")
 async def recommend_resume(
     file: UploadFile = File(...)
 ):
 
-    # --------------------------------------------------------
-    # Check file type
-    # --------------------------------------------------------
+    # -----------------------------------------------------
+    # Validate PDF
+    # -----------------------------------------------------
 
     if file.content_type != "application/pdf":
 
@@ -398,9 +320,9 @@ async def recommend_resume(
         )
 
 
-    # --------------------------------------------------------
-    # Read uploaded file
-    # --------------------------------------------------------
+    # -----------------------------------------------------
+    # Read file
+    # -----------------------------------------------------
 
     contents = await file.read()
 
@@ -413,9 +335,9 @@ async def recommend_resume(
         )
 
 
-    # --------------------------------------------------------
+    # -----------------------------------------------------
     # Extract PDF text
-    # --------------------------------------------------------
+    # -----------------------------------------------------
 
     try:
 
@@ -423,11 +345,11 @@ async def recommend_resume(
             io.BytesIO(contents)
         )
 
-    except Exception as e:
+    except Exception:
 
         raise HTTPException(
             status_code=400,
-            detail=f"Could not read PDF: {str(e)}"
+            detail="Invalid PDF file."
         )
 
 
@@ -445,10 +367,6 @@ async def recommend_resume(
             )
 
 
-    # --------------------------------------------------------
-    # Check extracted text
-    # --------------------------------------------------------
-
     if not resume_text.strip():
 
         raise HTTPException(
@@ -457,58 +375,36 @@ async def recommend_resume(
         )
 
 
-    # --------------------------------------------------------
-    # Create resume embedding
-    # --------------------------------------------------------
+    # -----------------------------------------------------
+    # Limit text size
+    # Helps keep memory usage low
+    # -----------------------------------------------------
 
-    candidate_embedding = create_embedding(
-        resume_text
+    resume_text = resume_text[:20000]
+
+
+    # -----------------------------------------------------
+    # Recommendation
+    # -----------------------------------------------------
+
+    results = search_internships(
+        resume_text,
+        top_k=5
     )
 
 
-    # --------------------------------------------------------
-    # Search FAISS
-    # --------------------------------------------------------
-
-    similarities, indices = search_internships(
-        candidate_embedding
-    )
-
-
-    # --------------------------------------------------------
-    # Prepare results
-    # --------------------------------------------------------
-
-    results = build_results(
-        similarities,
-        indices
-    )
-
-
-    # --------------------------------------------------------
-    # Return response
-    # --------------------------------------------------------
+    # -----------------------------------------------------
+    # Response
+    # -----------------------------------------------------
 
     return {
-        "message": "Resume processed successfully.",
 
-        "resume_name": file.filename,
+        "message":
+            "Resume processed successfully.",
 
-        "matches": results
+        "resume_name":
+            file.filename,
+
+        "matches":
+            results
     }
-
-
-# ============================================================
-# Run locally
-# ============================================================
-
-if __name__ == "__main__":
-
-    import uvicorn
-
-    uvicorn.run(
-        "app:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True
-    )

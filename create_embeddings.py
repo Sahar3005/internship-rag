@@ -1,99 +1,202 @@
 import json
 import os
+import pickle
 
 import faiss
-from sentence_transformers import SentenceTransformer
+import numpy as np
+
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-# 1. Load internship dataset
-with open("data/internships.json", "r", encoding="utf-8") as file:
-    internships = json.load(file)
+# =========================================================
+# PATHS
+# =========================================================
 
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 
-# 2. Load embedding model
-model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+VECTOR_DIR = os.path.join(
+    BASE_DIR,
+    "vector_db"
+)
 
+METADATA_FILE = os.path.join(
+    VECTOR_DIR,
+    "internships_metadata.json"
+)
 
-# 3. Convert internship information into text
-def internship_to_text(internship):
+INDEX_FILE = os.path.join(
+    VECTOR_DIR,
+    "internships.index"
+)
 
-    return f"""
-    Internship Title: {internship['title']}
-    Company: {internship['company']}
-
-    Description:
-    {internship['description']}
-
-    Required Skills:
-    {', '.join(internship['required_skills'])}
-
-    Preferred Skills:
-    {', '.join(internship['preferred_skills'])}
-
-    Education:
-    {internship['education']}
-
-    Experience:
-    {internship['experience']}
-
-    Location:
-    {internship['location']}
-
-    Work Mode:
-    {internship['work_mode']}
-
-    Duration:
-    {internship['duration']}
-    """
-
-
-# 4. Create documents
-documents = [
-    internship_to_text(internship)
-    for internship in internships
-]
-
-
-# 5. Generate embeddings
-embeddings = model.encode(
-    documents,
-    convert_to_numpy=True
+VECTORIZER_FILE = os.path.join(
+    VECTOR_DIR,
+    "tfidf_vectorizer.pkl"
 )
 
 
-# 6. Create FAISS index
-dimension = embeddings.shape[1]
+# =========================================================
+# LOAD INTERNSHIPS
+# =========================================================
 
-index = faiss.IndexFlatL2(dimension)
-
-index.add(embeddings)
-
-
-# 7. Create vector_db folder if it doesn't exist
-os.makedirs("vector_db", exist_ok=True)
-
-
-# 8. Save FAISS index
-faiss.write_index(
-    index,
-    "vector_db/internships.index"
-)
-
-
-# 9. Save internship metadata
 with open(
-    "vector_db/internships_metadata.json",
-    "w",
+    METADATA_FILE,
+    "r",
     encoding="utf-8"
 ) as file:
 
-    json.dump(
-        internships,
-        file,
-        indent=4
+    internships = json.load(file)
+
+
+print(
+    f"Loaded {len(internships)} internship records."
+)
+
+
+# =========================================================
+# CREATE TEXT
+# =========================================================
+
+texts = []
+
+
+for internship in internships:
+
+    text = f"""
+
+    Internship Title:
+    {internship.get('title', '')}
+
+    Company:
+    {internship.get('company', '')}
+
+    Description:
+    {internship.get('description', '')}
+
+    Required Skills:
+    {' '.join(internship.get('required_skills', []))}
+
+    Preferred Skills:
+    {' '.join(internship.get('preferred_skills', []))}
+
+    Education:
+    {internship.get('education', '')}
+
+    Experience:
+    {internship.get('experience', '')}
+
+    Location:
+    {internship.get('location', '')}
+
+    Work Mode:
+    {internship.get('work_mode', '')}
+
+    Duration:
+    {internship.get('duration', '')}
+
+    """
+
+    texts.append(text)
+
+
+# =========================================================
+# TF-IDF
+# =========================================================
+
+vectorizer = TfidfVectorizer(
+    lowercase=True,
+    stop_words="english",
+    max_features=3000
+)
+
+
+embeddings = vectorizer.fit_transform(
+    texts
+)
+
+
+print(
+    "Created TF-IDF embeddings:",
+    embeddings.shape
+)
+
+
+# =========================================================
+# SAVE VECTORIZER
+# =========================================================
+
+with open(
+    VECTORIZER_FILE,
+    "wb"
+) as file:
+
+    pickle.dump(
+        vectorizer,
+        file
     )
 
 
-print("Internship embeddings created successfully.")
-print("Total internships:", len(internships))
-print("Embedding dimension:", dimension)
+print(
+    "Saved:",
+    VECTORIZER_FILE
+)
+
+
+# =========================================================
+# CONVERT TO FLOAT32
+# =========================================================
+
+embedding_array = embeddings.toarray().astype(
+    "float32"
+)
+
+
+# =========================================================
+# NORMALIZE
+# =========================================================
+
+faiss.normalize_L2(
+    embedding_array
+)
+
+
+# =========================================================
+# CREATE FAISS INDEX
+# =========================================================
+
+dimension = embedding_array.shape[1]
+
+
+index = faiss.IndexFlatIP(
+    dimension
+)
+
+
+index.add(
+    embedding_array
+)
+
+
+# =========================================================
+# SAVE INDEX
+# =========================================================
+
+faiss.write_index(
+    index,
+    INDEX_FILE
+)
+
+
+print(
+    "Saved FAISS index:",
+    INDEX_FILE
+)
+
+
+print(
+    f"FAISS index contains {index.ntotal} records."
+)
+
+print("Done!")
