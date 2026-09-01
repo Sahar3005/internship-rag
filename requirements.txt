@@ -1,7 +1,9 @@
 fastapi
 uvicorn
-pypdf
 faiss-cpu
 numpy
 scikit-learn
-python-multipart
+scipy
+pydantic
+pypdf
+requests
